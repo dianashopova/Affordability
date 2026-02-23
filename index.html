@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello, Allergic Doggy!</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+    }
+
+    .stars {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle var(--duration) infinite ease-in-out;
+      opacity: 0;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
+    h1 {
+      font-size: 4.5rem;
+      font-weight: 900;
+      background: linear-gradient(90deg, #e94560, #f5a623, #f9d423, #00d2ff, #a18cd1);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientShift 4s ease infinite, popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      text-align: center;
+      letter-spacing: -1px;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    .btn {
+      margin-top: 2rem;
+      padding: 1rem 2.5rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(90deg, #f5a623, #e94560);
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(233, 69, 96, 0.4);
+      transition: transform 0.15s, box-shadow 0.15s;
+      animation: fadeUp 1s ease 0.4s both;
+      letter-spacing: 1px;
+    }
+
+    .btn:hover {
+      transform: scale(1.07);
+      box-shadow: 0 12px 35px rgba(233, 69, 96, 0.6);
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- Dog Modal Overlay --- */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 100;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .overlay.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .dog-card {
+      background: #fff8f0;
+      border-radius: 2rem;
+      padding: 2.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      max-width: 420px;
+      width: 90%;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .dog-card h2 {
+      font-size: 1.8rem;
+      color: #c0392b;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .dog-card p {
+      color: #555;
+      margin-top: 1rem;
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    .close-btn {
+      margin-top: 1.5rem;
+      padding: 0.6rem 2rem;
+      border: none;
+      border-radius: 50px;
+      background: #e94560;
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .close-btn:hover { background: #c0392b; }
+
+    /* Sneeze animation on the dog SVG */
+    .sneeze-burst {
+      animation: sneeze 0.5s ease infinite alternate;
+      transform-origin: 50% 50%;
+    }
+
+    @keyframes sneeze {
+      from { transform: scale(1) rotate(-2deg); }
+      to { transform: scale(1.06) rotate(2deg); }
+    }
+
+    /* Watery eyes blink */
+    .eye-water {
+      animation: drip 1.5s ease infinite;
+    }
+
+    @keyframes drip {
+      0%, 100% { opacity: 0; transform: translateY(0); }
+      40% { opacity: 1; }
+      80% { opacity: 0; transform: translateY(12px); }
+    }
+
+    .sneeze-text {
+      font-size: 2rem;
+      animation: pop 1s ease infinite alternate;
+      display: inline-block;
+      margin: 0.3rem;
+      color: #f5a623;
+    }
+
+    @keyframes pop {
+      from { transform: scale(1) rotate(-5deg); }
+      to { transform: scale(1.2) rotate(5deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stars" id="stars"></div>
+
+  <h1>Hello, allergic doggy!</h1>
+
+  <button class="btn" onclick="showDog()">Hello spotty doggy 🐾</button>
+
+  <!-- Dog Overlay -->
+  <div class="overlay" id="overlay">
+    <div class="dog-card">
+      <h2>Spotty the Allergic Doggo 🤧</h2>
+
+      <!-- Cartoon Allergic Dog SVG -->
+      <svg class="sneeze-burst" xmlns="http://www.w3.org/2000/svg" width="260" height="260" viewBox="0 0 260 260">
+
+        <!-- Body -->
+        <ellipse cx="130" cy="185" rx="75" ry="55" fill="#f0c98a"/>
+
+        <!-- Spots on body -->
+        <ellipse cx="100" cy="175" rx="14" ry="11" fill="#c8915a" opacity="0.7"/>
+        <ellipse cx="155" cy="195" rx="11" ry="9" fill="#c8915a" opacity="0.7"/>
+        <ellipse cx="130" cy="210" rx="9" ry="7" fill="#c8915a" opacity="0.7"/>
+        <ellipse cx="170" cy="170" rx="8" ry="6" fill="#c8915a" opacity="0.7"/>
+
+        <!-- Tail -->
+        <path d="M200 200 Q240 170 230 145" stroke="#f0c98a" stroke-width="14" fill="none" stroke-linecap="round"/>
+
+        <!-- Head -->
+        <circle cx="130" cy="110" r="62" fill="#f0c98a"/>
+
+        <!-- Spot on head -->
+        <ellipse cx="108" cy="95" rx="16" ry="12" fill="#c8915a" opacity="0.6"/>
+        <ellipse cx="155" cy="115" rx="10" ry="8" fill="#c8915a" opacity="0.6"/>
+
+        <!-- Puffy/swollen cheeks (allergic puffiness) -->
+        <ellipse cx="90" cy="120" rx="22" ry="16" fill="#f5b8b8" opacity="0.6"/>
+        <ellipse cx="170" cy="120" rx="22" ry="16" fill="#f5b8b8" opacity="0.6"/>
+
+        <!-- Ears -->
+        <ellipse cx="78" cy="75" rx="22" ry="32" fill="#e0a96d" transform="rotate(-15 78 75)"/>
+        <ellipse cx="182" cy="75" rx="22" ry="32" fill="#e0a96d" transform="rotate(15 182 75)"/>
+
+        <!-- Inner ears -->
+        <ellipse cx="78" cy="75" rx="12" ry="20" fill="#d4917e" opacity="0.5" transform="rotate(-15 78 75)"/>
+        <ellipse cx="182" cy="75" rx="12" ry="20" fill="#d4917e" opacity="0.5" transform="rotate(15 182 75)"/>
+
+        <!-- Eyes (red/watery allergic eyes) -->
+        <!-- Left eye white -->
+        <ellipse cx="105" cy="105" rx="16" ry="14" fill="white"/>
+        <!-- Right eye white -->
+        <ellipse cx="155" cy="105" rx="16" ry="14" fill="white"/>
+        <!-- Left eye red tint -->
+        <ellipse cx="105" cy="105" rx="16" ry="14" fill="#ff6666" opacity="0.25"/>
+        <!-- Right eye red tint -->
+        <ellipse cx="155" cy="105" rx="16" ry="14" fill="#ff6666" opacity="0.25"/>
+        <!-- Pupils -->
+        <circle cx="107" cy="106" r="7" fill="#3a2a1a"/>
+        <circle cx="157" cy="106" r="7" fill="#3a2a1a"/>
+        <!-- Eye shine -->
+        <circle cx="110" cy="103" r="2.5" fill="white"/>
+        <circle cx="160" cy="103" r="2.5" fill="white"/>
+        <!-- Squinty/watery lower lids -->
+        <path d="M91 112 Q105 118 119 112" stroke="#e07070" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M141 112 Q155 118 169 112" stroke="#e07070" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+        <!-- Tear drops (animated) -->
+        <ellipse class="eye-water" cx="98" cy="120" rx="3" ry="5" fill="#7ec8e3" opacity="0.8" style="animation-delay:0s"/>
+        <ellipse class="eye-water" cx="162" cy="120" rx="3" ry="5" fill="#7ec8e3" opacity="0.8" style="animation-delay:0.7s"/>
+
+        <!-- Nose (big, cute, slightly red) -->
+        <ellipse cx="130" cy="130" rx="14" ry="10" fill="#c0392b"/>
+        <ellipse cx="125" cy="127" rx="4" ry="3" fill="white" opacity="0.4"/>
+
+        <!-- Sneezing mouth -->
+        <path d="M112 148 Q130 165 148 148" stroke="#c0392b" stroke-width="3" fill="#ffe0e0" stroke-linecap="round"/>
+
+        <!-- Tongue out -->
+        <ellipse cx="130" cy="158" rx="10" ry="7" fill="#e74c6c"/>
+
+        <!-- Sneeze particles -->
+        <circle cx="155" cy="138" r="3" fill="#a8d8ea" opacity="0.8"/>
+        <circle cx="163" cy="130" r="2" fill="#a8d8ea" opacity="0.7"/>
+        <circle cx="170" cy="140" r="4" fill="#a8d8ea" opacity="0.6"/>
+        <circle cx="167" cy="123" r="2.5" fill="#a8d8ea" opacity="0.5"/>
+
+        <!-- Tissue in paw -->
+        <rect x="55" y="205" rx="8" ry="8" width="32" height="24" fill="white" stroke="#ddd" stroke-width="1.5"/>
+        <path d="M57 210 Q71 203 83 210" stroke="#eee" stroke-width="2" fill="none"/>
+
+        <!-- Paw holding tissue -->
+        <ellipse cx="71" cy="222" rx="18" ry="13" fill="#f0c98a"/>
+        <circle cx="60" cy="215" r="7" fill="#f0c98a"/>
+        <circle cx="71" cy="212" r="7" fill="#f0c98a"/>
+        <circle cx="82" cy="215" r="7" fill="#f0c98a"/>
+
+        <!-- Little flowers/allergens floating -->
+        <text x="20" y="80" font-size="18" opacity="0.7">🌸</text>
+        <text x="210" y="90" font-size="14" opacity="0.6">🌼</text>
+        <text x="195" y="55" font-size="12" opacity="0.5">🌿</text>
+        <text x="35" y="55" font-size="13" opacity="0.5">🌺</text>
+
+      </svg>
+
+      <div>
+        <span class="sneeze-text">Ah...</span>
+        <span class="sneeze-text" style="animation-delay:0.3s">Ah...</span>
+        <span class="sneeze-text" style="animation-delay:0.6s">ACHOO! 🤧</span>
+      </div>
+
+      <p>Poor Spotty is allergic to everything — flowers, dust, and probably Mondays. But still the goodest boy! 🐶❤️</p>
+
+      <button class="close-btn" onclick="hideDog()">Bless you, Spotty! 🐾</button>
+    </div>
+  </div>
+
+  <script>
+    // Stars
+    const container = document.getElementById('stars');
+    for (let i = 0; i < 120; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.setProperty('--duration', (Math.random() * 3 + 1) + 's');
+      star.style.animationDelay = (Math.random() * 3) + 's';
+      container.appendChild(star);
+    }
+
+    function showDog() {
+      document.getElementById('overlay').classList.add('active');
+    }
+
+    function hideDog() {
+      document.getElementById('overlay').classList.remove('active');
+    }
+
+    // Close on backdrop click
+    document.getElementById('overlay').addEventListener('click', function(e) {
+      if (e.target === this) hideDog();
+    });
+  </script>
+
+</body>
+</html>
