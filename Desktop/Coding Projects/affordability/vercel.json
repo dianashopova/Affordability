@@ -1,0 +1,5 @@
+{
+  "buildCommand": "pip install -r requirements.txt && python fetch_data.py && python dashboard.py",
+  "outputDirectory": "output",
+  "installCommand": ""
+}
