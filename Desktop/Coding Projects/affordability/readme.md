@@ -1,0 +1,1 @@
+This is a vibe-coded project using Claude code that creates a bunch of dashboards and analyses using Python to look at home price affordability. It is going to connect to the Fred API.
